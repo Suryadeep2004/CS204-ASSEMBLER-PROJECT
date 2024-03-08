@@ -38,10 +38,10 @@ unordered_map<string, string> opcodeValue={ //hash map of instructions and their
     {"sw",   "0100011"},
     {"sd",   "0100011"},
     {"sh",   "0100011"},
-    {"beq",  "1100111"},
-    {"bne",  "1100111"},
-    {"bge",  "1100111"},
-    {"blt",  "1100111"},
+    {"beq",  "1100011"},
+    {"bne",  "1100011"},
+    {"bge",  "1100011"},
+    {"blt",  "1100011"},
     {"auipc","0010111"},
     {"lui",  "0110111"},
     {"jal",  "1101111"}
@@ -207,5 +207,19 @@ void extractImmediate(string& input, string& X, string& Y) {
     else{
         X = "";
         Y = "";
+    }
+}
+
+//Function to check whether immediate value is integer or a label
+bool isInteger(string& str) {
+    try{
+        stoi(str);
+        return true;
+    } 
+    catch (const invalid_argument& e){
+        return false;
+    } 
+    catch (const out_of_range& e){
+        return false;
     }
 }

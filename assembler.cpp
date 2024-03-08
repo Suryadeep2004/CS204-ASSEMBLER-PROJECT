@@ -108,6 +108,30 @@ int main(){
             cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (sb.find(words[0])!=sb.end()){ //checking if instruction is SB type
+            if (words.size()<4){ //at least 3 arguements should be there else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string instruction=words[0]; //obtaining the instruction word
+            string rs1=registerValue[words[1]]; //obtaining the source register 1
+            string rs2=registerValue[words[2]]; //obtaining the source register 2
+            string label=words[3]; //obtaining the label
+            string opcode=opcodeValue[instruction]; //obtaining the opcode
+            string funct3=funct3Value[instruction]; //obtaining the funct3
+            int immVal;
+            if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
+            else immVal=labels[label]-programCounter; //calculating the immediate value from label
+            if (immVal<-2048 || immVal>2047){ //the integer should be bounded else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string imm;
+            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+            else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
+            while (imm.size()<12) imm="0"+imm; 
+            string binInstruction=imm[0]+imm.substr(2, 6)+rs2+rs1+funct3+imm.substr(7, 4)+imm[1]+opcode; //combining all pieces of binary strings together
+            string hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (u.find(words[0])!=u.end()){ //checking if instruction is U type
         }
