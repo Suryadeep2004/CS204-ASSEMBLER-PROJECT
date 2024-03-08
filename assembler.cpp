@@ -121,10 +121,6 @@ int main(){
             int immVal;
             if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
             else immVal=labels[label]-programCounter; //calculating the immediate value from label
-            if (immVal<-2048 || immVal>2047){ //the integer should be bounded else error
-                cout<<"Error present at text line "<<k<<endl;
-                return 0;
-            }
             string imm;
             if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
             else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
@@ -146,13 +142,31 @@ int main(){
                 cout<<"Error present at text line "<<k<<endl;
                 return 0;
             }
-            string imm=decimalToBinary(immVal);
+            string imm=decimalToBinary(immVal); //converting immediate from integer decimal to string binary
             while (imm.size()<20) imm="0"+imm;
             string binInstruction=imm+rd+opcode; //combining all pieces of binary strings together
             string hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
             cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (uj.find(words[0])!=uj.end()){ //checking if instruction is UJ type
+            if (words.size()<3){ //at least 2 arguements should be there else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string instruction=words[0]; //obtaining the instruction word
+            string rd=registerValue[words[1]]; //obtaining the destination register 
+            string label=words[2]; //obtaining the label
+            string opcode=opcodeValue[instruction]; //obtaining the opcode
+            int immVal;
+            if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
+            else immVal=labels[label]-programCounter; //calculating the immediate value from label
+            string imm;
+            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+            else imm=decimalToBinary(2097152+immVal); //if the immediate is negative then take 2's complement
+            while (imm.size()<20) imm="0"+imm; 
+            string binInstruction=imm[0]+imm.substr(10, 10)+imm[9]+imm.substr(1, 8)+rd+opcode; //combining all pieces of binary strings together
+            string hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else{ //if none then obviously an error
             cout<<"Error present at text line "<<k<<endl;
