@@ -134,6 +134,23 @@ int main(){
             cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (u.find(words[0])!=u.end()){ //checking if instruction is U type
+            if (words.size()<3){ //at least 2 arguements should be there else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string instruction=words[0]; //obtaining the instruction word
+            string opcode=opcodeValue[instruction]; //obtaining the opcode
+            string rd=registerValue[words[1]]; //obtaining the destination register
+            int immVal=stoi(words[2]);
+            if (immVal<0 || immVal>1048575){ //the integer should be bounded else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string imm=decimalToBinary(immVal);
+            while (imm.size()<20) imm="0"+imm;
+            string binInstruction=imm+rd+opcode; //combining all pieces of binary strings together
+            string hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (uj.find(words[0])!=uj.end()){ //checking if instruction is UJ type
         }
