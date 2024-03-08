@@ -59,6 +59,22 @@ int main(){
             cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (i.find(words[0])!=i.end()){ //checking if instruction is I type
+            if (words.size()<4 || !(-2048<=stoi(words[3]) && stoi(words[3])<2048)){ //at least 3 arguements should be there and the immediate value should be bounded else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string instruction=words[0]; //obtaining the instruction word
+            string rd=registerValue[words[1]]; //obtaining the destination register
+            string rs1=registerValue[words[2]]; //obtaining the source register 
+            int immVal=stoi(words[3]); //obtaining the immediate value integer
+            string imm;
+            if (immVal>=0) imm=decimalToBinary(immVal);
+            else imm=decimalToBinary(4096+immVal);
+            string opcode=opcodeValue[instruction]; //obtaining the opcode
+            string funct3=funct3Value[instruction]; //obtaining the funct3
+            string binInstruction=imm+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
+            string hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (s.find(words[0])!=s.end()){ //checking if instruction is S type
         }
