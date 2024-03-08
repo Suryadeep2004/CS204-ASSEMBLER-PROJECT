@@ -184,6 +184,7 @@ string decimalToHex(int decimal) {
     return ss.str();
 }
 
+//Function to convert decimal integer to binary string
 string decimalToBinary(int decimal) {
     if (decimal == 0) return "0";
     string binary = "";
@@ -192,4 +193,19 @@ string decimalToBinary(int decimal) {
         decimal /= 2;
     }
     return binary;
+}
+
+//Function to extract immediate value from S type instructions
+void extractImmediate(string& input, string& X, string& Y) {
+    size_t leftParenthesisPos = input.find_first_of('(');
+    size_t rightParenthesisPos = input.find_last_of(')');
+
+    if (leftParenthesisPos!=string::npos && rightParenthesisPos!=string::npos && leftParenthesisPos < rightParenthesisPos) {
+        X = input.substr(0, leftParenthesisPos);
+        Y = input.substr(leftParenthesisPos + 1, rightParenthesisPos - leftParenthesisPos - 1);
+    } 
+    else{
+        X = "";
+        Y = "";
+    }
 }

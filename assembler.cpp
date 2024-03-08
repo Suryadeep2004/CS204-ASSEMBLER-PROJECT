@@ -68,8 +68,8 @@ int main(){
             string rs1=registerValue[words[2]]; //obtaining the source register 
             int immVal=stoi(words[3]); //obtaining the immediate value integer
             string imm;
-            if (immVal>=0) imm=decimalToBinary(immVal);
-            else imm=decimalToBinary(4096+immVal);
+            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+            else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
             string opcode=opcodeValue[instruction]; //obtaining the opcode
             string funct3=funct3Value[instruction]; //obtaining the funct3
             string binInstruction=imm+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
@@ -77,6 +77,35 @@ int main(){
             cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (s.find(words[0])!=s.end()){ //checking if instruction is S type
+            if (words.size()<3){ //at least 2 arguements should be there else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string instruction=words[0]; //obtaining the instruction word
+            string rs2=registerValue[words[1]]; //obtaining the source register 2
+            string str=words[2]; //obtaining the second arguement 
+            string opcode=opcodeValue[instruction]; //obtaining the opcode
+            string funct3=funct3Value[instruction]; //obtaining the funct3
+            string rs1, imm, imm1, imm2;
+            extractImmediate(str, imm, rs1); //extracting the immediate and source register 1 from second arguement
+            if (imm=="" || rs1==""){ //if any of the immediate or source register is empty then error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            rs1=registerValue[rs1]; //obtaining the source register 1
+            int immVal=stoi(imm); //converting the immediate string to integer
+            if (immVal<-2048 || immVal>2047){ //the integer should be bounded else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+            else imm=decimalToBinary(4096+immVal); //if the immediate is negative then take 2's complement
+            while (imm.size()<12) imm="0"+imm; 
+            imm2=imm.substr(0, 7); //extracting the second part of immediate
+            imm1=imm.substr(7); //extracting the first part of immediate
+            string binInstruction=imm2+rs2+rs1+funct3+imm1+opcode; //combining all pieces of binary strings together
+            string hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
         else if (sb.find(words[0])!=sb.end()){ //checking if instruction is SB type
         }
