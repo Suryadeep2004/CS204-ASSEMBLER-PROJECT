@@ -42,22 +42,37 @@ int main(){
     for (int k = 0; k<textLines.size(); k++){
         vector<string> words=splitString(textLines[k]); //splitting the text line into tokens
         words[0]=toLowercase(words[0]); //converting the instruction to lowercase
-        if (r.find(words[0])!=r.end()){
+        if (r.find(words[0])!=r.end()){ //checking if instruction is R type
+            if (words.size()<4){ //at least 3 arguements should be there else error
+                cout<<"Error present at text line "<<k<<endl;
+                return 0;
+            }
+            string instruction=words[0]; //obtaining the instruction word
+            string rd=registerValue[words[1]]; //obtaining the destination register
+            string rs1=registerValue[words[2]]; //obtaining the source register 1
+            string rs2=registerValue[words[3]]; //obtaining the source register 2
+            string opcode=opcodeValue[instruction]; //obtaining the opcode
+            string funct3=funct3Value[instruction]; //obtaining the funct3
+            string funct7=funct7Value[instruction]; //obtaining the funct7
+            string binInstruction=funct7+rs2+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
+            string hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
         }
-        else if (i.find(words[0])!=i.end()){
+        else if (i.find(words[0])!=i.end()){ //checking if instruction is I type
         }
-        else if (s.find(words[0])!=s.end()){
+        else if (s.find(words[0])!=s.end()){ //checking if instruction is S type
         }
-        else if (sb.find(words[0])!=sb.end()){
+        else if (sb.find(words[0])!=sb.end()){ //checking if instruction is SB type
         }
-        else if (u.find(words[0])!=u.end()){
+        else if (u.find(words[0])!=u.end()){ //checking if instruction is U type
         }
-        else if (uj.find(words[0])!=uj.end()){
+        else if (uj.find(words[0])!=uj.end()){ //checking if instruction is UJ type
         }
-        else{
+        else{ //if none then obviously an error
             cout<<"Error present at text line "<<k<<endl;
             return 0;
         }
+        programCounter+=4;
     }
     return 0;
 }
