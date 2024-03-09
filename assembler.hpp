@@ -146,13 +146,21 @@ string removeCommasAndSpaces(string& str) {
 }
 
 //Function to split the line obtained into tokens
-vector<string> splitString(string& str) {
+// vector<string> splitString(string& str) {
+//     vector<string> words;
+//     istringstream iss(str);
+//     string word;
+//     while (iss >> word) words.push_back(word);
+//     return words;
+// }
+vector<string> splitString(const string& str) {
     vector<string> words;
     istringstream iss(str);
     string word;
     while (iss >> word) words.push_back(word);
     return words;
 }
+
 
 //Function to convert a string in lowercase format
 string toLowercase(const std::string& str) {
