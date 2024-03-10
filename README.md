@@ -17,7 +17,9 @@ PROJECT DESCRIPTION:
 This project aims to implement a robust RISC-V assembler that translates RISC-V assembly code into machine code. The project consists of three main files:
 
 assembler.cpp: This file contains the main code (driver) for the project. It reads a sample RISC-V code from the input.asm file, processes it, and generates the corresponding machine code for the instructions. The machine code, along with the memory segment representation allocated in the .data segment, is then written to an output file named output.mc.
+
 assembler.hpp: This header file contains all the required functions and declarations used in the assembler.cpp file.
+
 input.asm: This file contains a sample RISC-V code that serves as input to the assembler. The code may include instructions, labels, and data declarations.
 
 KEY FEATURES OF THE ASSEMBLER:
