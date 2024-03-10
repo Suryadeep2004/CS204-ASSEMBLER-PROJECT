@@ -255,3 +255,20 @@ bool isInteger(string& str) {
         return false;
     }
 }
+
+//Function to check whether immediate value is hexadecimal or decimal
+bool isHexadecimal(string str) {
+    if (str.length() < 3 || str.substr(0, 2) != "0x") return false;
+    for (size_t i = 2; i < str.length(); ++i) {
+        if (!isxdigit(str[i]))
+            return false;
+    }
+    return true;
+}
+
+//Function to convert hexadecimal string to binary string
+string hexToBinary(string hexString, size_t n) {
+    unsigned long long intVal = stoull(hexString, nullptr, 16);
+    bitset<64> bits(intVal); 
+    return bits.to_string().substr(64 - n);
+}

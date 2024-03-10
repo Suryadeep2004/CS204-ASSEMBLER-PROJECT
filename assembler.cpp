@@ -145,18 +145,21 @@ int main(){
                 anyError=true;
                 break;
             }
-            int immVal=stoi(words[3]); //obtaining the immediate value integer
-            if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
-                cout<<"Error present at text line "<<k<<endl;
-                cout<<"Immediate value is out of range"<<endl;
-                anyError=true;
-                break;
-            }
             string rd, rs1, imm, opcode, funct3, binInstruction, hexInstruction;
+            if (isHexadecimal(words[3])) imm=hexToBinary(words[3], 12);
+            else{
+                int immVal=stoi(words[3]); //obtaining the immediate value integer
+                if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"Immediate value is out of range"<<endl;
+                    anyError=true;
+                    break;
+                }
+                if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+                else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
+            }
             rd=registerValue[words[1]]; //obtaining the destination register
             rs1=registerValue[words[2]]; //obtaining the source register 
-            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
-            else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
             opcode=opcodeValue[instruction]; //obtaining the opcode
             funct3=funct3Value[instruction]; //obtaining the funct3
             binInstruction=imm+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
@@ -195,16 +198,19 @@ int main(){
                 break;
             }
             rs1=registerValue[rs1]; //obtaining the source register 1
-            int immVal=stoi(imm); //converting the immediate string to integer
-            if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
-                cout<<"Error present at text line "<<k<<endl;
-                cout<<"Immediate value is out of range"<<endl;
-                anyError=true;
-                break;
+            if (isHexadecimal(imm)) imm=hexToBinary(imm, 12);
+            else{
+                int immVal=stoi(imm); //converting the immediate string to integer
+                if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"Immediate value is out of range"<<endl;
+                    anyError=true;
+                    break;
+                }
+                if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+                else imm=decimalToBinary(4096+immVal); //if the immediate is negative then take 2's complement
+                while (imm.size()<12) imm="0"+imm; 
             }
-            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
-            else imm=decimalToBinary(4096+immVal); //if the immediate is negative then take 2's complement
-            while (imm.size()<12) imm="0"+imm; 
             imm2=imm.substr(0, 7); //extracting the second part of immediate
             imm1=imm.substr(7); //extracting the first part of immediate
             binInstruction=imm2+rs2+rs1+funct3+imm1+opcode; //combining all pieces of binary strings together
@@ -231,11 +237,14 @@ int main(){
             label=words[3]; //obtaining the label
             opcode=opcodeValue[instruction]; //obtaining the opcode
             funct3=funct3Value[instruction]; //obtaining the funct3
-            if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
-            else immVal=labels[label]-programCounter; //calculating the immediate value from label
-            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
-            else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
-            while (imm.size()<12) imm="0"+imm; 
+            if (isHexadecimal(label)) imm=hexToBinary(label, 12);
+            else{
+                if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
+                else immVal=labels[label]-programCounter; //calculating the immediate value from label
+                if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+                else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
+                while (imm.size()<12) imm="0"+imm; 
+            }
             binInstruction=imm[0]+imm.substr(2, 6)+rs2+rs1+funct3+imm.substr(7, 4)+imm[1]+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
             outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
@@ -253,18 +262,21 @@ int main(){
                 anyError=true;
                 break;
             }
-            int immVal=stoi(words[2]);
-            if (immVal<0 || immVal>1048575){ //the immediate value should be bounded else error
-                cout<<"Error present at text line "<<k<<endl;
-                cout<<"Immediate value is out of range"<<endl;
-                anyError=true;
-                break;
-            }
             string opcode, rd, imm, binInstruction, hexInstruction;
+            if (isHexadecimal(words[2])) imm=hexToBinary(words[2], 20);
+            else{
+                int immVal=stoi(words[2]);
+                if (immVal<0 || immVal>1048575){ //the immediate value should be bounded else error
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"Immediate value is out of range"<<endl;
+                    anyError=true;
+                    break;
+                }
+                imm=decimalToBinary(immVal); //converting immediate from integer decimal to string binary
+                while (imm.size()<20) imm="0"+imm;
+            }
             opcode=opcodeValue[instruction]; //obtaining the opcode
             rd=registerValue[words[1]]; //obtaining the destination register
-            imm=decimalToBinary(immVal); //converting immediate from integer decimal to string binary
-            while (imm.size()<20) imm="0"+imm;
             binInstruction=imm+rd+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
             outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
@@ -284,14 +296,17 @@ int main(){
             }
             int immVal;
             string rd, label, opcode, imm, binInstruction, hexInstruction;
+            if (isHexadecimal(label)) imm=hexToBinary(label, 20);
+            else{
+                if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
+                else immVal=labels[label]-programCounter; //calculating the immediate value from label
+                if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+                else imm=decimalToBinary(2097152+immVal); //if the immediate is negative then take 2's complement
+                while (imm.size()<20) imm="0"+imm; 
+            }
             rd=registerValue[words[1]]; //obtaining the destination register 
             label=words[2]; //obtaining the label
             opcode=opcodeValue[instruction]; //obtaining the opcode
-            if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
-            else immVal=labels[label]-programCounter; //calculating the immediate value from label
-            if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
-            else imm=decimalToBinary(2097152+immVal); //if the immediate is negative then take 2's complement
-            while (imm.size()<20) imm="0"+imm; 
             binInstruction=imm[0]+imm.substr(10, 10)+imm[9]+imm.substr(1, 8)+rd+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
             outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
@@ -305,6 +320,7 @@ int main(){
         programCounter+=4;
     }
     if (!anyError){
+        cout<<"Program executed successfully"<<endl;
         for (string line : outputLines) outfile<<line<<endl;
     }
     outfile.close(); //closing the file
