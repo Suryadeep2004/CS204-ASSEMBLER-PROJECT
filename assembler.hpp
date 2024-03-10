@@ -243,7 +243,7 @@ void extractImmediate(string& input, string& X, string& Y) {
 }
 
 //Function to check whether immediate value is integer or a label
-bool isInteger(string& str) {
+bool isInteger(string str) {
     try{
         stoi(str);
         return true;

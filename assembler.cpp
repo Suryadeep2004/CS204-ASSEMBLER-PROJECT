@@ -295,9 +295,9 @@ int main(){
                 else immVal=labels[label]-programCounter; //calculating the immediate value from label
                 if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
                 else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
-                while (imm.size()<12) imm="0"+imm; 
+                while (imm.size()<13) imm="0"+imm; 
             }
-            binInstruction=imm[0]+imm.substr(2, 6)+rs2+rs1+funct3+imm.substr(7, 4)+imm[1]+opcode; //combining all pieces of binary strings together
+            binInstruction=imm[0]+imm.substr(2, 6)+rs2+rs1+funct3+imm.substr(8, 4)+imm[1]+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
             outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
@@ -348,6 +348,7 @@ int main(){
             }
             int immVal;
             string rd, label, opcode, imm, binInstruction, hexInstruction;
+            label=words[2]; //obtaining the label
             if (isHexadecimal(label)) imm=hexToBinary(label, 20);
             else{
                 if (isInteger(label)) immVal=stoi(label); //storing the immediate value if no label present
@@ -357,7 +358,6 @@ int main(){
                 while (imm.size()<20) imm="0"+imm; 
             }
             rd=registerValue[words[1]]; //obtaining the destination register 
-            label=words[2]; //obtaining the label
             opcode=opcodeValue[instruction]; //obtaining the opcode
             binInstruction=imm[0]+imm.substr(10, 10)+imm[9]+imm.substr(1, 8)+rd+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
