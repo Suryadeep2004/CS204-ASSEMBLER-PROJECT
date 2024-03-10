@@ -133,38 +133,90 @@ int main(){
             outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
         else if (i.find(instruction)!=i.end()){ //checking if instruction is I type
-            if (words.size()<4){ //at least 3 arguements should be there
-                cout<<"Error present at text line "<<k<<endl;
-                cout<<"I instruction should have 3 arguements"<<endl;
-                anyError=true;
-                break;
-            }
-            if (registerValue.find(words[1])==registerValue.end() || registerValue.find(words[2])==registerValue.end()){
-                cout<<"Error present at text line "<<k<<endl;
-                cout<<"Incorrect register value"<<endl;
-                anyError=true;
-                break;
-            }
-            string rd, rs1, imm, opcode, funct3, binInstruction, hexInstruction;
-            if (isHexadecimal(words[3])) imm=hexToBinary(words[3], 12);
-            else{
-                int immVal=stoi(words[3]); //obtaining the immediate value integer
-                if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
+            if (instruction=="lb" || instruction=="ld" || instruction=="lh" || instruction=="lw"){
+                if (words.size()<3){ //at least 3 arguements should be there else error
                     cout<<"Error present at text line "<<k<<endl;
-                    cout<<"Immediate value is out of range"<<endl;
+                    cout<<"I instruction should have 3 arguements"<<endl;
                     anyError=true;
                     break;
                 }
-                if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
-                else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
+                string rs, rd, imm, opcode, funct3, str, binInstruction, hexInstruction;
+                if (registerValue.find(words[1])==registerValue.end()){
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"Incorrect register value"<<endl;
+                    anyError=true;
+                    break;
+                }
+                rd=registerValue[words[1]]; //obtaining the source register 2
+                opcode=opcodeValue[instruction]; //obtaining the opcode
+                funct3=funct3Value[instruction]; //obtaining the funct3
+                str=words[2]; //obtaining the second arguement 
+                extractImmediate(str, imm, rs); //extracting the immediate and source register 1 from second arguement
+                if (imm=="" || rs==""){ //if any of the immediate or source register is empty then error
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"I instruction should have 3 arguements"<<endl;
+                    anyError=true;
+                    break;
+                }
+                if (registerValue.find(rs)==registerValue.end()){
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"Incorrect register value"<<endl;
+                    anyError=true;
+                    break;
+                }
+                rs=registerValue[rs]; //obtaining the source register 1
+                if (isHexadecimal(imm)) imm=hexToBinary(imm, 12);
+                else{
+                    int immVal=stoi(imm); //converting the immediate string to integer
+                    if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
+                        cout<<"Error present at text line "<<k<<endl;
+                        cout<<"Immediate value is out of range"<<endl;
+                        anyError=true;
+                        break;
+                    }
+                    if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+                    else imm=decimalToBinary(4096+immVal); //if the immediate is negative then take 2's complement
+                    while (imm.size()<12) imm="0"+imm; 
+                }
+                binInstruction=imm+rs+funct3+rd+opcode; //combining all pieces of binary strings together
+                hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+                outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
             }
-            rd=registerValue[words[1]]; //obtaining the destination register
-            rs1=registerValue[words[2]]; //obtaining the source register 
-            opcode=opcodeValue[instruction]; //obtaining the opcode
-            funct3=funct3Value[instruction]; //obtaining the funct3
-            binInstruction=imm+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
-            hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
-            outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
+            else{
+                if (words.size()<4){ //at least 3 arguements should be there
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"I instruction should have 3 arguements"<<endl;
+                    cout<<textLines[k]<<endl;
+                    anyError=true;
+                    break;
+                }
+                if (registerValue.find(words[1])==registerValue.end() || registerValue.find(words[2])==registerValue.end()){
+                    cout<<"Error present at text line "<<k<<endl;
+                    cout<<"Incorrect register value"<<endl;
+                    anyError=true;
+                    break;
+                }
+                string rd, rs1, imm, opcode, funct3, binInstruction, hexInstruction;
+                if (isHexadecimal(words[3])) imm=hexToBinary(words[3], 12);
+                else{
+                    int immVal=stoi(words[3]); //obtaining the immediate value integer
+                    if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
+                        cout<<"Error present at text line "<<k<<endl;
+                        cout<<"Immediate value is out of range"<<endl;
+                        anyError=true;
+                        break;
+                    }
+                    if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
+                    else imm=decimalToBinary(4096+immVal);//if the immediate is negative then take 2's complement
+                }
+                rd=registerValue[words[1]]; //obtaining the destination register
+                rs1=registerValue[words[2]]; //obtaining the source register 
+                opcode=opcodeValue[instruction]; //obtaining the opcode
+                funct3=funct3Value[instruction]; //obtaining the funct3
+                binInstruction=imm+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
+                hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
+                outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
+            }
         }
         else if (s.find(instruction)!=s.end()){ //checking if instruction is S type
             if (words.size()<3){ //at least 3 arguements should be there else error
