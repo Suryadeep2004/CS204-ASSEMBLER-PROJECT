@@ -30,8 +30,10 @@ int main(){
     }
     inFile.close(); //closing the file object
     
+    ofstream outfile("output.mc"); // Open output.mc file for writing
+
     // Print memory allocated in the .data segment
-    cout << "Memory allocated in the .data segment:" << endl;
+    outputLines.push_back("Memory allocated in the .data segment:");
     int dataAddress =268435452; // Start address for data segment
     int l=0;
     for (const string& data : dataLines) {
@@ -45,7 +47,7 @@ int main(){
             for (const string& token : tokens) {
                 if(token==tokens[0])continue;
                 dataAddress += 4;
-                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                outputLines.push_back(decimalToHex(dataAddress) + " : " + token);
                 // Increment address for next data
             }
         }
@@ -57,7 +59,7 @@ int main(){
             for (const string& token : tokens) {
                 if(token==tokens[0])continue;
                 dataAddress += 4;
-                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                outputLines.push_back(decimalToHex(dataAddress) + " : " + token);
                 // Increment address for next data
             }
         }
@@ -69,7 +71,7 @@ int main(){
             for (const string& token : tokens) {
                 if(token==tokens[0])continue;
                 dataAddress += 8;
-                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                outputLines.push_back(decimalToHex(dataAddress) + " : " + token);
                 // Increment address for next data
             }
         }
@@ -81,7 +83,7 @@ int main(){
             for (const string& token : tokens) {
                 if(token==tokens[0])continue;
                 dataAddress += 1;
-                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                outputLines.push_back(decimalToHex(dataAddress) + " : " + token);
                 // Increment address for next data
             }
         }
@@ -93,15 +95,14 @@ int main(){
             for (const string& token : tokens) {
                 if(token==tokens[0])continue;
                 dataAddress += 2;
-                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                outputLines.push_back(decimalToHex(dataAddress) + " : " + token);
                 // Increment address for next data
             }
         }
     }
 
     //traversing through the text segment of the code to produce it's corresponding machine code
-    cout<<endl;
-    cout<<"Machine Code for the instructions in .text segment:"<<endl;
+    outputLines.push_back("\nMachine Code for the instructions in .text segment:");
     programCounter=0; //program counter initialised to 0
     for (int k = 0; k<textLines.size(); k++){
         vector<string> words=splitString(textLines[k]); //splitting the text line into tokens
@@ -111,12 +112,14 @@ int main(){
             if (words.size()<4){ //at least 3 arguements should be there else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"R instruction should have 3 arguements"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             if (registerValue.find(words[1])==registerValue.end() || registerValue.find(words[2])==registerValue.end() || registerValue.find(words[3])==registerValue.end()){
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Incorrect register value"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             string rd, rs1, rs2, opcode, funct3, funct7, binInstruction, hexInstruction;
             rd=registerValue[words[1]]; //obtaining the destination register
@@ -127,24 +130,27 @@ int main(){
             funct7=funct7Value[instruction]; //obtaining the funct7
             binInstruction=funct7+rs2+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
-            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
+            outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
         else if (i.find(instruction)!=i.end()){ //checking if instruction is I type
             if (words.size()<4){ //at least 3 arguements should be there
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"I instruction should have 3 arguements"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             if (registerValue.find(words[1])==registerValue.end() || registerValue.find(words[2])==registerValue.end()){
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Incorrect register value"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             int immVal=stoi(words[3]); //obtaining the immediate value integer
             if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Immediate value is out of range"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             string rd, rs1, imm, opcode, funct3, binInstruction, hexInstruction;
             rd=registerValue[words[1]]; //obtaining the destination register
@@ -155,19 +161,21 @@ int main(){
             funct3=funct3Value[instruction]; //obtaining the funct3
             binInstruction=imm+rs1+funct3+rd+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
-            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
+            outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
         else if (s.find(instruction)!=s.end()){ //checking if instruction is S type
             if (words.size()<3){ //at least 3 arguements should be there else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"S instruction should have 3 arguements"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             string rs1, rs2, imm, imm1, imm2, opcode, funct3, str, binInstruction, hexInstruction;
             if (registerValue.find(words[1])==registerValue.end()){
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Incorrect register value"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             rs2=registerValue[words[1]]; //obtaining the source register 2
             opcode=opcodeValue[instruction]; //obtaining the opcode
@@ -177,19 +185,22 @@ int main(){
             if (imm=="" || rs1==""){ //if any of the immediate or source register is empty then error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"S instruction should have 3 arguements"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             if (registerValue.find(rs1)==registerValue.end()){
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Incorrect register value"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             rs1=registerValue[rs1]; //obtaining the source register 1
             int immVal=stoi(imm); //converting the immediate string to integer
             if (immVal<-2048 || immVal>2047){ //the immediate value should be bounded else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Immediate value is out of range"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             if (immVal>=0) imm=decimalToBinary(immVal); //converting the immediate integer to binary string
             else imm=decimalToBinary(4096+immVal); //if the immediate is negative then take 2's complement
@@ -198,18 +209,20 @@ int main(){
             imm1=imm.substr(7); //extracting the first part of immediate
             binInstruction=imm2+rs2+rs1+funct3+imm1+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
-            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
+            outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
         else if (sb.find(instruction)!=sb.end()){ //checking if instruction is SB type
             if (words.size()<4){ //at least 3 arguements should be there else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"SB instruction should have 3 arguements"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             if (registerValue.find(words[1])==registerValue.end() || registerValue.find(words[2])==registerValue.end()){
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Incorrect register value"<<endl;
-                return 0;
+                anyError=true;
+                break;
             } 
             int immVal;
             string rs1, rs2, label, opcode, funct3, imm, binInstruction, hexInstruction;
@@ -225,24 +238,27 @@ int main(){
             while (imm.size()<12) imm="0"+imm; 
             binInstruction=imm[0]+imm.substr(2, 6)+rs2+rs1+funct3+imm.substr(7, 4)+imm[1]+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
-            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
+            outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
         else if (u.find(instruction)!=u.end()){ //checking if instruction is U type
             if (words.size()<3){ //at least 2 arguements should be there else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"U instruction should have 2 arguements"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             if (registerValue.find(words[1])==registerValue.end()){
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Incorrect register value"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             int immVal=stoi(words[2]);
             if (immVal<0 || immVal>1048575){ //the immediate value should be bounded else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Immediate value is out of range"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             string opcode, rd, imm, binInstruction, hexInstruction;
             opcode=opcodeValue[instruction]; //obtaining the opcode
@@ -251,18 +267,20 @@ int main(){
             while (imm.size()<20) imm="0"+imm;
             binInstruction=imm+rd+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
-            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
+            outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
         else if (uj.find(instruction)!=uj.end()){ //checking if instruction is UJ type
             if (words.size()<3){ //at least 2 arguements should be there else error
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"UJ instruction should have 2 arguements"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             if (registerValue.find(words[1])==registerValue.end()){
                 cout<<"Error present at text line "<<k<<endl;
                 cout<<"Incorrect register value"<<endl;
-                return 0;
+                anyError=true;
+                break;
             }
             int immVal;
             string rd, label, opcode, imm, binInstruction, hexInstruction;
@@ -276,15 +294,19 @@ int main(){
             while (imm.size()<20) imm="0"+imm; 
             binInstruction=imm[0]+imm.substr(10, 10)+imm[9]+imm.substr(1, 8)+rd+opcode; //combining all pieces of binary strings together
             hexInstruction=binaryToHex(binInstruction); //converting the binary machine code to hexadecimal machine code
-            cout<<decimalToHex(programCounter)<<" "<<hexInstruction<<endl;
+            outputLines.push_back(decimalToHex(programCounter)+" "+hexInstruction);
         }
         else{ //if none then obviously an error
             cout<<"Error present at text line "<<k<<endl;
             cout<<"Instruction format unknown"<<endl;
-            return 0;
+            anyError=true;
+            break;
         }
         programCounter+=4;
     }
-
+    if (!anyError){
+        for (string line : outputLines) outfile<<line<<endl;
+    }
+    outfile.close(); //closing the file
     return 0;
 }
