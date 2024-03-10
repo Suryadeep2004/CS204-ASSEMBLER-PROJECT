@@ -30,95 +30,75 @@ int main(){
     }
     inFile.close(); //closing the file object
     
-     // Print memory allocated in the .data segment
-cout << "Memory allocated in the .data segment:" << endl;
- int dataAddress =268435452; // Start address for data segment
- int l=0;
-for (const string& data : dataLines) {
-   
-    // Split the line into tokens
-    vector<string> tokens = splitString(data);
-   if(tokens[0].find(".word")!=-1){
-       if(l==0){
-        dataAddress+=0;
-        l++;
+    // Print memory allocated in the .data segment
+    cout << "Memory allocated in the .data segment:" << endl;
+    int dataAddress =268435452; // Start address for data segment
+    int l=0;
+    for (const string& data : dataLines) {
+        // Split the line into tokens
+        vector<string> tokens = splitString(data);
+        if(tokens[0].find(".word")!=-1){
+            if(l==0){
+                dataAddress+=0;
+                l++;
+            }
+            for (const string& token : tokens) {
+                if(token==tokens[0])continue;
+                dataAddress += 4;
+                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                // Increment address for next data
+            }
+        }
+        else if(tokens[0].find(".asciz")!=-1||tokens[0].find(".asciiz")!=-1){
+            if(l==0){
+                dataAddress+=0;
+                l++;
+            }
+            for (const string& token : tokens) {
+                if(token==tokens[0])continue;
+                dataAddress += 4;
+                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                // Increment address for next data
+            }
+        }
+        else if(tokens[0].find(".dword")!=-1){
+            if(l==0){
+                dataAddress-=4;
+                l++;
+            }
+            for (const string& token : tokens) {
+                if(token==tokens[0])continue;
+                dataAddress += 8;
+                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                // Increment address for next data
+            }
+        }
+        else if(tokens[0].find(".byte")!=-1){
+            if(l==0){
+                dataAddress+=3;
+                l++;
+            }
+            for (const string& token : tokens) {
+                if(token==tokens[0])continue;
+                dataAddress += 1;
+                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                // Increment address for next data
+            }
+        }
+        else if(tokens[0].find(".half")!=-1){
+            if(l==0){
+                dataAddress+=2;
+                l++;
+            }
+            for (const string& token : tokens) {
+                if(token==tokens[0])continue;
+                dataAddress += 2;
+                cout << decimalToHex(dataAddress) << " : " << token << endl;
+                // Increment address for next data
+            }
+        }
     }
-    for (const string& token : tokens) {
-        if(token==tokens[0])continue;
-        dataAddress += 4;
-        cout << decimalToHex(dataAddress) << " : " << token << endl;
-         // Increment address for next data
-    }
-   }
-   else if(tokens[0].find(".asciz")!=-1||tokens[0].find(".asciiz")!=-1){
-       if(l==0){
-        dataAddress+=0;
-        l++;
-    }
-    for (const string& token : tokens) {
-        if(token==tokens[0])continue;
-        dataAddress += 4;
-        cout << decimalToHex(dataAddress) << " : " << token << endl;
-         // Increment address for next data
-    }
-   }
-   else if(tokens[0].find(".dword")!=-1){
-       if(l==0){
-        dataAddress-=4;
-        l++;
-    }
-    for (const string& token : tokens) {
-        if(token==tokens[0])continue;
-        dataAddress += 8;
-        cout << decimalToHex(dataAddress) << " : " << token << endl;
-         // Increment address for next data
-    }
-   }
-   else if(tokens[0].find(".byte")!=-1){
-       if(l==0){
-        dataAddress+=3;
-        l++;
-    }
-    for (const string& token : tokens) {
-        if(token==tokens[0])continue;
-        dataAddress += 1;
-        cout << decimalToHex(dataAddress) << " : " << token << endl;
-         // Increment address for next data
-    }
-   }
-   else if(tokens[0].find(".half")!=-1){
-       if(l==0){
-        dataAddress+=2;
-        l++;
-    }
-    for (const string& token : tokens) {
-        if(token==tokens[0])continue;
-        dataAddress += 2;
-        cout << decimalToHex(dataAddress) << " : " << token << endl;
-         // Increment address for next data
-    }
-   }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-}
 
-
-    //dummy output to check if everything is fine until now
-    // for (string str : dataLines) cout<<str<<endl;
-    // cout<<endl;
-    // for (string str : textLines) cout<<str<<endl;
-    // cout<<endl;
-    // for (auto x : labels) cout<<x.first<<" "<<x.second<<endl;
-
-   
     //traversing through the text segment of the code to produce it's corresponding machine code
     cout<<endl;
     cout<<"Machine Code for the instructions in .text segment:"<<endl;
@@ -258,7 +238,6 @@ for (const string& data : dataLines) {
         }
         programCounter+=4;
     }
-   
 
     return 0;
 }
