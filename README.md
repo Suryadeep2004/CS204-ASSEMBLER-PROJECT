@@ -1,13 +1,13 @@
 TO EXECUTE THE PROJECT:
 
-FILE SETUP:
+File Setup:
 Ensure that all three files (assembler.cpp, assembler.hpp, and input.asm) are present in the same directory.
 
-COMPILATION:
+Compilation:
 Compile the assembler.cpp file using the command:g++ assembler.cpp
 This will generate an executable file named a.out.
 
-EXECUTION:
+Execution:
 Run the executable using the command:./a.out
 This will execute the program and produce the output file output.mc containing the required machine code of the instructions and the memory segment representation allocated in the .data segment.
 
