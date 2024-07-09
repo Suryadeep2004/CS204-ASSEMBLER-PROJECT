@@ -37,3 +37,9 @@ Case Insensitivity: Our code supports case insensitivity for instructions. For e
 Error Handling: The code incorporates robust error handling mechanisms. It detects errors such as incorrect instruction formats, typos in instruction names, and incorrect register names (e.g., x32, x33). Additionally, the assembler identifies incorrect usage of labels, such as attempting to jump to labels that are not defined in the code, and displays appropriate error messages.
 
 Overall, this RISC-V assembler provides a reliable and efficient solution for converting RISC-V assembly code into machine code, with comprehensive error handling capabilities to ensure the accuracy and integrity of the assembly process.
+
+README FOR CHAMPSIM:
+Here the cache sets are divided into Hot and Cold inorder to reduce the conflict misses.
+Dynamic remapping is used.
+An attempt to increse the hit rates on a software level is made through this project.
+
