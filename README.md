@@ -1,18 +1,18 @@
-TO EXECUTE THE PROJECT:
+### TO EXECUTE THE PROJECT:
 
-File Setup:
+### File Setup:
 Ensure that all three files (assembler.cpp, assembler.hpp, and input.asm) are present in the same directory.
 
-Compilation:
+### Compilation:
 Compile the assembler.cpp file using the command:g++ assembler.cpp
 This will generate an executable file named a.out.
 
-Execution:
+### Execution:
 Run the executable using the command:./a.out
 This will execute the program and produce the output file output.mc containing the required machine code of the instructions and the memory segment representation allocated in the .data segment.
 
 
-PROJECT DESCRIPTION:
+### PROJECT DESCRIPTION:
 
 This project aims to implement a robust RISC-V assembler that translates RISC-V assembly code into machine code. The project consists of three main files:
 
@@ -22,7 +22,7 @@ assembler.hpp: This header file contains all the required functions and declarat
 
 input.asm: This file contains a sample RISC-V code that serves as input to the assembler. The code may include instructions, labels, and data declarations.
 
-KEY FEATURES OF THE ASSEMBLER:
+### KEY FEATURES OF THE ASSEMBLER:
 
 Register Aliases: Our code supports multiple alternate names for registers such as t0, t1, sp, etc. This allows for flexibility in writing assembly code.
 
@@ -38,7 +38,8 @@ Error Handling: The code incorporates robust error handling mechanisms. It detec
 
 Overall, this RISC-V assembler provides a reliable and efficient solution for converting RISC-V assembly code into machine code, with comprehensive error handling capabilities to ensure the accuracy and integrity of the assembly process.
 
-README FOR CHAMPSIM:
+### README FOR CHAMPSIM:
+
 Here the cache sets are divided into Hot and Cold inorder to reduce the conflict misses.
 Dynamic remapping is used.
 An attempt to increse the hit rates on a software level is made through this project.
